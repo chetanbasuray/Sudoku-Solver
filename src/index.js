@@ -1,4 +1,4 @@
-const square_coordinates = [
+const squareCoordinates = [
     [1, 1, 1, 2, 2, 2, 3, 3, 3],
     [1, 1, 1, 2, 2, 2, 3, 3, 3],
     [1, 1, 1, 2, 2, 2, 3, 3, 3],
@@ -16,7 +16,7 @@ const square_coordinates = [
  * @param row
  * @returns {[]}
  */
-function get_row(board, row) {
+function getRow(board, row) {
     return board[row]
 }
 
@@ -26,7 +26,7 @@ function get_row(board, row) {
  * @param column
  * @returns {[]}
  */
-function get_column(board, column) {
+function getColumn(board, column) {
     const col = [];
     for (let row = 0; row < 9; row++) {
         col.push(board[row][column]);
@@ -40,11 +40,11 @@ function get_column(board, column) {
  * @param square
  * @returns {[]}
  */
-function get_square(board, square) {
+function getSquare(board, square) {
     let cells = []
     for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
-            if (square === square_coordinates[r][c]) {
+            if (square === squareCoordinates[r][c]) {
                 cells.push(board[r][c])
             }
         }
@@ -59,8 +59,8 @@ function get_square(board, square) {
  * @param c
  * @returns {boolean}
  */
-function complete_cell(board, r, c) {
-    let used = [...get_row(board, r), ...get_column(board, c), ...get_square(board, square_coordinates[r][c])]
+function completeCell(board, r, c) {
+    let used = [...getRow(board, r), ...getColumn(board, c), ...getSquare(board, squareCoordinates[r][c])]
     let possibilities = []
     for (let p = 1; p <= 9; p++) {
         if (!used.includes(p)) {
@@ -85,7 +85,7 @@ function complete_cell(board, r, c) {
  * @param c
  * @returns {boolean}
  */
-function appears_once_only(board, possibilities, segment, r, c) {
+function appearsOnceOnly(board, possibilities, segment, r, c) {
     let updated = false
     for (let i = 0; i < possibilities.length; i++) {
         let possibility = possibilities[i]
@@ -127,21 +127,21 @@ function compare(expected, actual) {
  * @param board
  * @returns {boolean}
  */
-function is_solved(board) {
+function isSolved(board) {
     let expected = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     let valid = true
     for (let r = 0; r < 9 && valid === true; r++) {
-        if (!compare(expected, get_row(board, r))) {
+        if (!compare(expected, getRow(board, r))) {
             valid = false
         }
     }
     for (let c = 0; c < 9 && valid === true; c++) {
-        if (!compare(expected, get_column(board, c))) {
+        if (!compare(expected, getColumn(board, c))) {
             valid = false
         }
     }
     for (let q = 1; q < 9 && valid === true; q++) {
-        if (!compare(expected, get_square(board, q))) {
+        if (!compare(expected, getSquare(board, q))) {
             valid = false
         }
     }
@@ -153,20 +153,20 @@ function is_solved(board) {
  * @param orig_board
  * @returns {any|boolean}
  */
-function backtrack_based(orig_board) {
+function backtrackBased(orig_board) {
     let board = JSON.parse(JSON.stringify(orig_board));
     let completed_board;
     for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
             if (board[r][c] === 0) {
-                complete_cell(board, r, c)
-                if (is_solved(board)) return board;
+                completeCell(board, r, c)
+                if (isSolved(board)) return board;
                 let cell = board[r][c]
                 if (Array.isArray(cell)) {
                     for (let i = 0; i < cell.length; i++) {
                         let board_2 = JSON.parse(JSON.stringify(board));
                         board_2[r][c] = cell[i]
-                        if (completed_board = backtrack_based(board_2)) {
+                        if (completed_board = backtrackBased(board_2)) {
                             return completed_board;
                         }
                     }
@@ -183,28 +183,25 @@ function backtrack_based(orig_board) {
  * @param board
  * @returns {boolean}
  */
-function one_value_cell_constraint(board) {
+function oneValueCellConstraint(board) {
     let updated = false
-
     for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
             if (board[r][c] === 0) {
-                updated = complete_cell(board, r, c) || updated
+                updated = completeCell(board, r, c) || updated
             }
         }
     }
-
     for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
             if (Array.isArray(board[r][c])) {
                 let possibilities = board[r][c]
-                updated = appears_once_only(board, possibilities, get_row(board, r), r, c) ||
-                    appears_once_only(board, possibilities, get_column(board, c), r, c) ||
-                    appears_once_only(board, possibilities, get_square(board, square_coordinates[r][c]), r, c) || updated
+                updated = appearsOnceOnly(board, possibilities, getRow(board, r), r, c) ||
+                    appearsOnceOnly(board, possibilities, getColumn(board, c), r, c) ||
+                    appearsOnceOnly(board, possibilities, getSquare(board, squareCoordinates[r][c]), r, c) || updated
             }
         }
     }
-
     for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
             if (Array.isArray(board[r][c])) {
@@ -212,7 +209,6 @@ function one_value_cell_constraint(board) {
             }
         }
     }
-
     return updated
 }
 
@@ -222,17 +218,15 @@ function one_value_cell_constraint(board) {
  * @returns {any | boolean}
  */
 function solve(board) {
-
     let updated = true, solved = false
     while (updated && !solved) {
-        updated = one_value_cell_constraint(board)
-        solved = is_solved(board)
+        updated = oneValueCellConstraint(board)
+        solved = isSolved(board)
     }
     if (!solved) {
-        board = backtrack_based(board)
-        is_solved(board)
+        board = backtrackBased(board)
+        isSolved(board)
     }
-
     return board
 }
 
