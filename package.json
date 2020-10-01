@@ -1,0 +1,22 @@
+{
+  "name": "sudoku-solver",
+  "version": "1.0.0",
+  "description": "I will try to create a Sudoku Solver with a frontend. This is a project with which I wish to learn more about front end development.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chetanbasuray/Sudoku-Solver.git"
+  },
+  "author": "Chetan Basuray",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chetanbasuray/Sudoku-Solver/issues"
+  },
+  "homepage": "https://github.com/chetanbasuray/Sudoku-Solver#readme",
+  "dependencies": {
+    "jest": "^26.4.2"
+  }
+}
